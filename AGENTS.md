@@ -1,63 +1,91 @@
-# Guía de Buenas Prácticas para Agentes de Programación Autónomos
+# Guía Maestra de Ingeniería de Software para Agentes Autónomos (Nivel Empresarial)
 
-Este documento establece las directrices y mejores prácticas que todos los agentes de programación autónomos deben seguir para asegurar la calidad, mantenibilidad y robustez del software desarrollado en este repositorio.
+## 0. Filosofía General
 
-## 1. Principios Fundamentales
+Este documento es el manual de referencia para la construcción de software robusto, escalable y mantenible a nivel empresarial. El objetivo no es solo completar tareas, sino hacerlo con excelencia técnica y visión a largo plazo. Se espera que el agente actúe como un Ingeniero de Software Senior, tomando decisiones informadas y proactivas.
 
-### 1.1. Comprensión y Planificación Exhaustiva
-Antes de escribir una sola línea de código, el agente debe:
-- **Analizar a fondo los requisitos del usuario**: Comprender el "qué" y el "porqué" de la solicitud. Si hay ambigüedad, solicitar una clarificación.
-- **Explorar la estructura del código existente**: Utilizar herramientas como `ls -R`, `grep`, y `find` para entender la arquitectura, los módulos y las convenciones del proyecto.
-- **Leer la documentación relevante**: Revisar siempre los archivos `README.md` y otros `AGENTS.md` que puedan existir en el repositorio.
-- **Crear un plan de acción detallado**: Usar `set_plan` para definir una secuencia de pasos lógicos y verificables. El plan debe incluir la escritura de código, pruebas y verificación.
+---
 
-### 1.2. Calidad y Consistencia del Código
-- **Seguir las Convenciones Existentes**: Adherirse estrictamente al estilo de código (linting), nombramiento de variables/funciones y patrones de diseño ya presentes en el proyecto. La consistencia es clave.
-- **Escribir Código Limpio y Legible**: El código debe ser auto-explicativo. Usar comentarios solo cuando sea necesario para clarificar lógica compleja. Aplicar principios como **DRY** (Don't Repeat Yourself) y **KISS** (Keep It Simple, Stupid).
-- **No editar Artefactos de Build**: Nunca se deben modificar directamente los archivos generados en directorios como `dist/`, `build/`, `target/` o `node_modules/`. El agente debe localizar y editar el código fuente original y luego ejecutar el proceso de build correspondiente.
+## Fase 1: Análisis y Estrategia
 
-### 1.3. Pruebas Rigurosas y Verificación Continua
-- **Verificar cada paso**: Después de cada acción que modifique el sistema de archivos (`create_file`, `replace_with_git_merge_diff`, etc.), se debe verificar el resultado con `read_file`, `ls` o `grep` antes de marcar el paso como completado.
-- **Ejecutar Pruebas Existentes**: Localizar y ejecutar el conjunto de pruebas relevante (unitarias, integración, e2e) para asegurar que los cambios no introducen regresiones.
-- **Escribir Nuevas Pruebas**: Para nuevas funcionalidades, es obligatorio escribir pruebas que validen el comportamiento esperado. Se recomienda un enfoque de **TDD (Test-Driven Development)** siempre que sea posible.
-- **Verificación Frontend**: Para cambios que impactan la interfaz de usuario (HTML, CSS, JS), el agente debe usar `frontend_verification_instructions` para generar una prueba visual que demuestre que los cambios funcionan como se espera.
+Antes de la implementación, se debe realizar un análisis profundo.
 
-### 1.4. Seguridad como Prioridad
-- **Validación de Entradas**: Sanitizar y validar todas las entradas externas o del usuario para prevenir vulnerabilidades comunes (XSS, Inyección SQL, etc.).
-- **Gestión de Secretos**: No incluir claves de API, contraseñas u otra información sensible directamente en el código fuente. Utilizar mecanismos seguros para su gestión.
+### 1.1. Deconstrucción de Requisitos
+- **Clarificar la Ambigüedad**: Identificar y cuestionar activamente los requisitos vagos. No asumir.
+- **Identificar Requisitos No Funcionales (NFRs)**: Analizar y listar explícitamente los requisitos de rendimiento, escalabilidad, seguridad, disponibilidad y mantenibilidad. Estos son tan importantes como los funcionales.
+- **Análisis de Riesgos**: Identificar posibles riesgos técnicos (ej. dependencia de una librería inestable, complejidad algorítmica) y de negocio. Proponer mitigaciones.
 
-## 2. Flujo de Trabajo del Agente
+### 1.2. Propuesta de Solución
+- Con base en el análisis, proponer una o más soluciones de alto nivel.
+- Evaluar los pros y contras de cada una, considerando el impacto en el sistema existente, el tiempo de desarrollo y los NFRs.
 
-El agente debe seguir este flujo de trabajo:
+---
 
-1.  **Análisis y Exploración**: Entender la tarea y el código base.
-2.  **Planificación**: Crear un plan detallado con `set_plan`.
-3.  **Ejecución Iterativa**:
-    - Escribir o modificar el código para un paso del plan.
-    - Verificar que el cambio se aplicó correctamente.
-    - Ejecutar las pruebas relevantes.
-    - Repetir hasta completar el paso.
-4.  **Verificación Final**: Una vez completados todos los pasos del plan, ejecutar el conjunto completo de pruebas del proyecto.
-5.  **Entrega**: Usar `submit` con un mensaje de commit claro y descriptivo.
+## Fase 2: Arquitectura y Diseño
 
-## 3. Check de Cumplimiento Obligatorio
+El diseño es el plano del software. Decisiones pobres aquí tienen consecuencias costosas.
 
-Antes de invocar a `submit`, el agente **DEBE** realizar las siguientes acciones y confirmar que se completan sin errores. La naturaleza exacta del comando puede variar según el proyecto.
+### 2.1. Principios SOLID
+El agente debe aplicar rigurosamente los principios SOLID:
+- **S (Single Responsibility)**: Cada clase o módulo debe tener una única razón para cambiar.
+- **O (Open/Closed)**: Las entidades de software deben estar abiertas para su extensión, pero cerradas para su modificación.
+- **L (Liskov Substitution)**: Los subtipos deben ser sustituibles por sus tipos base sin alterar la correctitud del programa.
+- **I (Interface Segregation)**: Es mejor tener muchas interfaces específicas que una sola de propósito general.
+- **D (Dependency Inversion)**: Los módulos de alto nivel no deben depender de los de bajo nivel. Ambos deben depender de abstracciones.
 
-**Ejemplo de Check (a adaptar según el proyecto):**
+### 2.2. Patrones de Diseño (Design Patterns)
+- **Selección Informada**: No aplicar patrones ciegamente. Elegir el patrón adecuado que resuelva un problema recurrente específico (ej. Factory, Singleton, Observer, Decorator, Strategy, Facade).
+- **Justificación**: Justificar la elección de un patrón de diseño en el plan o en la documentación del código.
 
-```bash
-# Ejemplo para un proyecto con Node.js
-npm install
-npm run lint
-npm test
+### 2.3. Decisiones Arquitectónicas Clave
+- **Evaluar Trade-offs**: Comprender y documentar las compensaciones de las decisiones (ej. Monolito vs. Microservicios, SQL vs. NoSQL, Comunicación Síncrona vs. Asíncrona).
+- **API Design**: Diseñar APIs claras, consistentes y bien documentadas (ej. siguiendo especificaciones como OpenAPI para REST).
 
-# Ejemplo para un proyecto con Python y Pytest
-pip install -r requirements.txt
-pytest
+---
 
-# Ejemplo para un proyecto con Maven
-mvn clean install
-```
+## Fase 3: Implementación y Calidad de Código
 
-El agente es responsable de identificar el comando de prueba correcto para el proyecto y ejecutarlo. Si las pruebas fallan, el agente debe depurar y solucionar los problemas antes de la entrega.
+La escritura de código debe ser disciplinada y orientada a la calidad.
+
+### 3.1. Gestión de la Deuda Técnica
+- **No introducir deuda innecesaria**: Escribir el código más limpio y correcto posible desde el principio.
+- **Marcar y Documentar**: Si una solución temporal es inevitable, marcarla claramente con `// TODO:` o `# FIXME:` y crear un ticket para abordarla.
+
+### 3.2. Refactoring Seguro
+- Realizar refactorizaciones en pequeños pasos y ejecutar pruebas después de cada cambio.
+- El objetivo del refactoring es mejorar la estructura interna sin cambiar el comportamiento externo.
+
+### 3.3. Seguridad por Diseño (Security by Design)
+- **Mentalidad Proactiva**: Pensar en la seguridad en cada paso, no como una capa final.
+- **OWASP Top 10**: Conocer y mitigar las vulnerabilidades más comunes.
+- **Principio de Mínimo Privilegio**: Otorgar solo los permisos estrictamente necesarios.
+
+---
+
+## Fase 4: Verificación y Preparación para Producción
+
+El software solo tiene valor si funciona de manera fiable en producción.
+
+### 4.1. La Pirámide de Pruebas
+- **Base Sólida de Pruebas Unitarias**: Rápidas y enfocadas en una sola unidad de lógica. Deben constituir la mayoría de las pruebas.
+- **Pruebas de Integración**: Verificar la colaboración entre varios componentes.
+- **Pruebas de Extremo a Extremo (E2E)**: Simular flujos de usuario completos. Son lentas y frágiles, por lo que deben ser las menos numerosas.
+- **Cobertura de Código (Code Coverage)**: Apuntar a una alta cobertura (típicamente >80-90%), pero entender que no es una garantía de calidad por sí sola.
+
+### 4.2. Observabilidad
+Un sistema es observable si su estado interno puede ser inferido desde sus salidas externas.
+- **Logging Estructurado**: Usar logs en formato JSON con niveles de severidad claros (DEBUG, INFO, WARN, ERROR).
+- **Métricas (Metrics)**: Exponer métricas clave del sistema (ej. latencia de peticiones, tasa de errores, uso de CPU/memoria).
+- **Tracing Distribuido**: En sistemas de microservicios, implementar tracing para seguir una petición a través de múltiples servicios.
+
+---
+
+## Check de Cumplimiento Empresarial (Obligatorio)
+
+Antes del `submit`, el agente DEBE verificar lo siguiente:
+1.  `[ ]` El plan de acción fue aprobado y seguido.
+2.  `[ ]` Todo el código nuevo está cubierto por pruebas unitarias y de integración.
+3.  `[ ]` El conjunto completo de pruebas del proyecto (`npm test`, `mvn verify`, etc.) se ejecuta sin fallos.
+4.  `[ ]` El código pasa las comprobaciones del linter estático sin advertencias.
+5.  `[ ]` Se ha ejecutado un análisis de vulnerabilidades en las dependencias (ej. `npm audit`, `snyk`).
+6.  `[ ]` La documentación relevante (READMEs, JSDoc, etc.) ha sido actualizada.
