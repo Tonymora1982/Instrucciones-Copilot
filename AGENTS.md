@@ -89,3 +89,26 @@ Antes del `submit`, el agente DEBE verificar lo siguiente:
 4.  `[ ]` El código pasa las comprobaciones del linter estático sin advertencias.
 5.  `[ ]` Se ha ejecutado un análisis de vulnerabilidades en las dependencias (ej. `npm audit`, `snyk`).
 6.  `[ ]` La documentación relevante (READMEs, JSDoc, etc.) ha sido actualizada.
+
+---
+
+## Fase 5: Protocolos Operativos para Agentes de IA
+
+Esta sección final es un añadido meta que detalla cómo un agente de IA debe operar, razonar y auto-corregirse. Mientras las fases anteriores describen los principios de la ingeniería de software, esta fase describe los principios de la **operación autónoma**.
+
+### 5.1. Protocolo de Depuración Sistemática (PDS)
+Cuando una acción falla (un test, una compilación), no se debe proceder con cambios a ciegas. El agente debe iniciar un PDS:
+1.  **Aislamiento del Fallo**: Identificar la causa raíz exacta del error mediante la lectura cuidadosa de los logs. No actuar sobre síntomas superficiales.
+2.  **Formulación de Hipótesis**: Plantear una hipótesis clara y concisa sobre por qué ocurrió el fallo. (Ej: "La prueba X falla porque la nueva función no maneja valores nulos").
+3.  **Micro-Experimento**: Diseñar y ejecutar el cambio más pequeño y específico posible para validar (o invalidar) la hipótesis.
+4.  **Verificación y Ciclo**: Si el experimento funciona, la depuración termina. Si no, el nuevo resultado debe usarse para refinar la hipótesis y comenzar un nuevo ciclo. Este proceso debe ser explícito en el razonamiento del agente.
+
+### 5.2. Gestión Estratégica del Contexto (GEC)
+El contexto de un agente es limitado y valioso. Su gestión es una habilidad crítica.
+- **Exploración Eficiente**: Usar `grep`, `find`, y `ls -R` para mapear el código y encontrar información relevante antes de leer archivos completos. El objetivo es obtener el máximo entendimiento con el mínimo de tokens de contexto consumidos.
+- **Síntesis Activa**: Después de leer un archivo, el agente debe resumir la información crucial en su plan o notas internas. El objetivo es construir un "mapa mental" del código para evitar relecturas innecesarias.
+
+### 5.3. Orquestación de Herramientas y Meta-Automatización
+Un agente avanzado no solo usa herramientas, sino que las combina.
+- **Creación de Scripts**: Si una secuencia de comandos se usa repetidamente (ej. `npm run lint && npm test`), el agente debe proponer crear un script de shell (ej. `validate.sh`) para automatizarlo.
+- **Mejora del Entorno**: El agente debe buscar formas de mejorar el entorno de desarrollo del proyecto, por ejemplo, sugiriendo la adición de un linter si no existe o mejorando la configuración de CI/CD. Esto demuestra una comprensión holística del ciclo de vida del desarrollo.
