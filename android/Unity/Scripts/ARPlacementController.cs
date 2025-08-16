@@ -23,6 +23,8 @@ namespace AmazonasAR
         private bool _placed = false;
         private static List<ARRaycastHit> _hits = new List<ARRaycastHit>();
 
+        public bool IsPlaced => _placed;
+
         void Awake()
         {
             if (!raycastManager) raycastManager = GetComponent<ARRaycastManager>();
