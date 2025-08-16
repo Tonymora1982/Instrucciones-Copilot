@@ -46,6 +46,11 @@ namespace AmazonasAR
             }
         }
 
+        public void PlaceBoardAt(Pose pose)
+        {
+            PlaceBoard(pose);
+        }
+
         private void PlaceBoard(Pose pose)
         {
             if (_placed || boardPrefab == null) return;
