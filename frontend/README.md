@@ -1,3 +1,16 @@
+# Reto del Amazonas - Frontend
+
+Este es el frontend para la aplicación de juego de mesa "Reto del Amazonas".
+
+## Funcionalidad AR / 3D (WebXR)
+
+La aplicación ahora incluye una experiencia de Realidad Aumentada (AR) implementada con **WebXR**, `three.js`, y `react-three-fiber`.
+
+- **Cómo funciona:** Al hacer clic en el botón de AR, la aplicación intentará iniciar una sesión de AR en dispositivos compatibles (principalmente móviles Android con ARCore). El usuario podrá ver la cámara de su dispositivo con un objeto 3D superpuesto.
+- **Componente clave:** La lógica se encuentra en `src/components/ARScene.jsx`.
+
+---
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

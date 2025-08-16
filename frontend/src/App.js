@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import "./index.css";
 import GameBoard from "./components/GameBoard";
 import ControlPanel from "./components/ControlPanel";
-import ARMock from "./components/ARMock";
+import ARScene from "./components/ARScene";
 import {
   createInitialState,
   loadState,
@@ -121,7 +121,7 @@ export default function App() {
       </main>
 
       {showAR && (
-        <ARMock color={state.players[state.activeIdx].color} onClose={() => setShowAR(false)} />
+        <ARScene />
       )}
       <Toaster />
     </div>
