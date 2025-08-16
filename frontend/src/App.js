@@ -1,54 +1,127 @@
-import { useEffect } from "react";
-import "./App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
+import React, { useEffect, useMemo, useState } from "react";
+import "./index.css";
+import GameBoard from "./components/GameBoard";
+import ControlPanel from "./components/ControlPanel";
+import ARMock from "./components/ARMock";
+import {
+  createInitialState,
+  loadState,
+  saveState,
+  rollDice,
+  applyTileEffects,
+  clampPosition,
+  nextPlayerIndex,
+  TILES,
+} from "./mock";
+import { useToast } from "./hooks/use-toast";
+import { Button } from "./components/ui/button";
+import { Card } from "./components/ui/card";
+import { Users } from "lucide-react";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
-
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
-
+function usePersistentState() {
+  const initial = useMemo(() => loadState() || createInitialState(["Arara", "Jaguar"]), []);
+  const [state, setState] = useState(initial);
   useEffect(() => {
-    helloWorldApi();
-  }, []);
+    saveState(state);
+  }, [state]);
+  return [state, setState];
+}
 
+function Header() {
   return (
-    <div>
-      <header className="App-header">
-        <a
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
-    </div>
-  );
-};
-
-function App() {
-  return (
-    <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
+    <div className="flex items-center justify-between p-3 bg-gradient-to-r from-emerald-800 to-emerald-600 text-white">
+      <div className="font-bold tracking-wide">Reto del Amazonas — MVP</div>
+      <div className="text-xs opacity-90">Modo: Pass &amp; Play (prototipo con AR simulada)</div>
     </div>
   );
 }
 
-export default App;
+export default function App() {
+  const { toast } = useToast();
+  const [state, setState] = usePersistentState();
+  const [showAR, setShowAR] = useState(false);
+
+  const onTileClick = (tile) => {
+    // Could show context or preview; for now do nothing
+  };
+
+  const handleRoll = () => {
+    const val = rollDice();
+    setState((prev) => {
+      const players = [...prev.players];
+      const p = { ...players[prev.activeIdx] };
+      let newPos = clampPosition(p.position + val);
+      p.position = newPos;
+      const tile = TILES[newPos];
+      const { player: updated, message, extraMove } = applyTileEffects(p, tile);
+      let finalPos = p.position;
+      if (extraMove) {
+        finalPos = clampPosition(p.position + extraMove);
+        updated.position = finalPos;
+      }
+      players[prev.activeIdx] = updated;
+      const reachedEnd = finalPos >= TILES.length - 1;
+      let finalMessage = message;
+      if (reachedEnd) {
+        finalMessage = `${updated.name} alcanzó la meta del río. ¡Victoria!`;
+      }
+      return { ...prev, players, lastRoll: val, message: finalMessage };
+    });
+  };
+
+  const handleEndTurn = () => {
+    setState((prev) => {
+      const next = nextPlayerIndex(prev.activeIdx, prev.players.length);
+      return { ...prev, activeIdx: next, lastRoll: null };
+    });
+    const nextPlayer = state.players[nextPlayerIndex(state.activeIdx, state.players.length)];
+    toast({ title: "Siguiente turno", description: `Pasa el teléfono a ${nextPlayer.name}.` });
+  };
+
+  const handleReset = () => {
+    setState(createInitialState(state.players.map((p) => p.name)));
+  };
+
+  return (
+    <div className="min-h-screen bg-[hsl(var(--background))]">
+      <Header />
+      <main className="p-4 grid grid-cols-1 lg:grid-cols-3 gap-4 max-w-6xl mx-auto">
+        <section className="lg:col-span-2">
+          <GameBoard players={state.players} onTileClick={onTileClick} />
+        </section>
+        <aside className="lg:col-span-1">
+          <ControlPanel
+            state={{ ...state, arEnabled: showAR }}
+            onRoll={handleRoll}
+            onEndTurn={handleEndTurn}
+            onToggleAR={() => setShowAR((s) => !s)}
+            onReset={handleReset}
+          />
+
+          <Card className="p-3 mt-3">
+            <div className="text-sm font-medium text-emerald-900 mb-2 flex items-center gap-2">
+              <Users className="w-4 h-4" /> Jugadores
+            </div>
+            <ul className="space-y-2">
+              {state.players.map((p, idx) => (
+                <li key={p.id} className="flex items-center justify-between text-sm">
+                  <span className="flex items-center gap-2">
+                    <span className="w-3 h-3 rounded-full border" style={{ background: p.color }} />
+                    {p.name} {idx === state.activeIdx && (
+                      <span className="ml-1 text-xs text-emerald-700">(turno)</span>
+                    )}
+                  </span>
+                  <span className="text-xs text-emerald-700">Casilla {p.position}</span>
+                </li>
+              ))}
+            </ul>
+          </Card>
+        </aside>
+      </main>
+
+      {showAR && (
+        <ARMock color={state.players[state.activeIdx].color} onClose={() => setShowAR(false)} />
+      )}
+    </div>
+  );
+}
