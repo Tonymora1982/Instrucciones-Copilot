@@ -92,8 +92,13 @@ namespace AmazonasAR
 
         public void RollAndMove()
         {
-            if (_players.Count == 0 || _nodes.Count == 0) return;
             int roll = Random.Range(1, 7);
+            RollAndMoveWithValue(roll);
+        }
+
+        public void RollAndMoveWithValue(int roll)
+        {
+            if (_players.Count == 0 || _nodes.Count == 0) return;
             var player = _players[_activeIndex];
             int newPos = Mathf.Clamp(player.position + roll, 0, _nodes.Count - 1);
 
@@ -112,6 +117,7 @@ namespace AmazonasAR
             if (reachedEnd)
             {
                 msg = $"{player.name} alcanzó la meta. ¡Victoria!";
+                SFXController.Instance?.PlayWin();
             }
 
             UpdateHUD(msg, roll);
