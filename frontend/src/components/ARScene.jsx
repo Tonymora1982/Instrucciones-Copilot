@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { ARButton, XR, useHitTest, Controllers } from '@react-three/xr';
-import { Ring } from '@react-three/drei';
+import { Ring, Text } from '@react-three/drei';
 import BoardModel, { getTilePosition } from './ar/BoardModel';
 import PawnModel from './ar/PawnModel';
 
@@ -35,7 +35,20 @@ function ARContent({ gameState }) {
       <pointLight position={[5, 5, 5]} />
       <Controllers onSelect={handleSelect} />
 
-      {!boardPosition && <Reticle />}
+      {!boardPosition && (
+        <>
+          <Reticle />
+          <Text
+            position={[0, 0.2, -1]}
+            fontSize={0.05}
+            color="white"
+            anchorX="center"
+            anchorY="middle"
+          >
+            Busque una superficie y toque para colocar el tablero.
+          </Text>
+        </>
+      )}
 
       {boardPosition && (
         <group position={boardPosition}>

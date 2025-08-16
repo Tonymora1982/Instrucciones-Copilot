@@ -13,6 +13,8 @@ import {
   nextPlayerIndex,
   TILES,
 } from "./mock";
+import { triggerVibration } from "./lib/haptics";
+import { playSound } from "./lib/sfx";
 import { useToast } from "./hooks/use-toast";
 import { Button } from "./components/ui/button";
 import { Card } from "./components/ui/card";
@@ -47,6 +49,8 @@ export default function App() {
   };
 
   const handleRoll = () => {
+    triggerVibration();
+    playSound('roll');
     const val = rollDice();
     setState((prev) => {
       const players = [...prev.players];

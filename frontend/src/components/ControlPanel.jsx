@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Progress } from "../components/ui/progress";
@@ -13,6 +13,16 @@ export default function ControlPanel({
   onReset,
 }) {
   const player = state.players[state.activeIdx];
+  const [isRolling, setIsRolling] = useState(false);
+
+  const handleRollClick = () => {
+    if (state.lastRoll !== null) return; // Prevent re-roll
+    setIsRolling(true);
+    onRoll();
+    setTimeout(() => {
+      setIsRolling(false);
+    }, 500); // Visual rolling duration
+  };
 
   return (
     <Card className="p-4 bg-white/70 backdrop-blur border-emerald-200">
@@ -34,10 +44,10 @@ export default function ControlPanel({
         </TabsList>
         <TabsContent value="panel">
           <div className="flex items-center gap-2">
-            <Button onClick={onRoll} className="bg-emerald-700 hover:bg-emerald-800 gap-2">
-              <Dice5 className="w-4 h-4" /> Lanzar dado
+            <Button onClick={handleRollClick} disabled={isRolling || state.lastRoll !== null} className="bg-emerald-700 hover:bg-emerald-800 gap-2">
+              <Dice5 className="w-4 h-4" /> {isRolling ? "Lanzando..." : "Lanzar dado"}
             </Button>
-            <Button variant="secondary" onClick={onEndTurn} className="gap-2">
+            <Button variant="secondary" onClick={onEndTurn} disabled={state.lastRoll === null} className="gap-2">
               <CheckCircle className="w-4 h-4" /> Fin de turno
             </Button>
             <Button variant="ghost" onClick={onReset} className="gap-2 text-rose-700 hover:text-rose-800">
@@ -45,7 +55,9 @@ export default function ControlPanel({
             </Button>
           </div>
           <div className="mt-3 text-sm text-emerald-900">
-            {state.lastRoll ? (
+            {isRolling ? (
+              <div>Lanzando el dado...</div>
+            ) : state.lastRoll ? (
               <div>
                 Lanzaste: <span className="font-semibold">{state.lastRoll}</span>
               </div>
