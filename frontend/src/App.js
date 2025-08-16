@@ -123,6 +123,7 @@ export default function App() {
       {showAR && (
         <ARMock color={state.players[state.activeIdx].color} onClose={() => setShowAR(false)} />
       )}
+      <Toaster />
     </div>
   );
 }
