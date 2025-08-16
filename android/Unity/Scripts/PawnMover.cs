@@ -19,6 +19,7 @@ namespace AmazonasAR
             for (int i = fromIndex; i != toIndex; i += dir)
             {
                 int next = i + dir;
+                SFXController.Instance?.PlayStep();
                 yield return MoveBetween(pawn, nodes[i].position, nodes[next].position);
             }
         }
