@@ -1,0 +1,48 @@
+name: Build Android APK (Unity 2022.3 LTS)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, staging/ar-3d-mvp ]
+    paths:
+      - 'Assets/**'
+      - 'ProjectSettings/**'
+      - 'Packages/**'
+      - '.github/workflows/**'
+
+jobs:
+  buildAndroid:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Activate Unity
+        uses: game-ci/unity-activate@v2
+        with:
+          unityLicense: ${{ secrets.UNITY_LICENSE }}
+
+      - name: Build Android APK
+        id: build
+        uses: game-ci/unity-builder@v4
+        with:
+          unityVersion: 2022.3.30f1
+          targetPlatform: Android
+          buildName: RetoAmazonas-ARCore
+          androidAppBundle: false
+          allowDirtyBuild: true
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: RetoAmazonas-ARCore-debug.apk
+          path: build/Android/*.apk
+
+      - name: Zip Build Folder
+        run: zip -r RetoAmazonas-ARCore-build.zip build/Android || true
+
+      - name: Upload ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: RetoAmazonas-ARCore-build.zip
+          path: RetoAmazonas-ARCore-build.zip

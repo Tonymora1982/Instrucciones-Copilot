@@ -1,0 +1,29 @@
+name: Unity - Request Activation File
+
+on:
+  workflow_dispatch:
+
+jobs:
+  requestActivation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Request manual activation file (ALF)
+        uses: game-ci/unity-request-activation-file@v2
+        with:
+          unityVersion: 2022.3.30f1
+
+      - name: Upload .alf
+        uses: actions/upload-artifact@v4
+        with:
+          name: Unity_ActivationFile_alf
+          path: unity-activation-file.alf
+
+      - name: Next steps
+        run: |
+          echo "1) Descarga el .alf desde Artifacts de este workflow."
+          echo "2) Sube el .alf a https://license.unity3d.com/manual para obtener el .ulf (Unity Personal)."
+          echo "3) Crea un Secret en el repo: UNITY_LICENSE con el contenido del .ulf."
+          echo "4) Ejecuta el workflow de build Android."
