@@ -32,7 +32,7 @@ function Header() {
   return (
     <div className="flex items-center justify-between p-3 bg-gradient-to-r from-emerald-800 to-emerald-600 text-white">
       <div className="font-bold tracking-wide">Reto del Amazonas — MVP</div>
-      <div className="text-xs opacity-90">Modo: Pass &amp; Play (prototipo con AR simulada)</div>
+      <div className="text-xs opacity-90">Modo: Pass &amp; Play (prototipo con WebXR)</div>
     </div>
   );
 }
@@ -91,13 +91,15 @@ export default function App() {
           <GameBoard players={state.players} onTileClick={onTileClick} />
         </section>
         <aside className="lg:col-span-1">
-          <ControlPanel
-            state={{ ...state, arEnabled: showAR }}
-            onRoll={handleRoll}
-            onEndTurn={handleEndTurn}
-            onToggleAR={() => setShowAR((s) => !s)}
-            onReset={handleReset}
-          />
+          {!showAR && (
+            <ControlPanel
+              state={{ ...state, arEnabled: showAR }}
+              onRoll={handleRoll}
+              onEndTurn={handleEndTurn}
+              onToggleAR={() => setShowAR((s) => !s)}
+              onReset={handleReset}
+            />
+          )}
 
           <Card className="p-3 mt-3">
             <div className="text-sm font-medium text-emerald-900 mb-2 flex items-center gap-2">
@@ -121,7 +123,18 @@ export default function App() {
       </main>
 
       {showAR && (
-        <ARScene />
+        <div style={{ position: 'fixed', inset: 0, zIndex: 40 }}>
+          <ARScene gameState={state} onClose={() => setShowAR(false)} />
+          <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 100, padding: '1rem' }}>
+            <ControlPanel
+              state={{ ...state, arEnabled: showAR }}
+              onRoll={handleRoll}
+              onEndTurn={handleEndTurn}
+              onToggleAR={() => setShowAR((s) => !s)}
+              onReset={handleReset}
+            />
+          </div>
+        </div>
       )}
       <Toaster />
     </div>
