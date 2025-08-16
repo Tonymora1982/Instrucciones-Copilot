@@ -5,9 +5,9 @@ on:
   push:
     branches: [ main, staging/ar-3d-mvp ]
     paths:
-      - 'Assets/**'
-      - 'ProjectSettings/**'
-      - 'Packages/**'
+      - 'UnityProject/Assets/**'
+      - 'UnityProject/ProjectSettings/**'
+      - 'UnityProject/Packages/**'
       - '.github/workflows/**'
 
 jobs:
@@ -31,6 +31,7 @@ jobs:
           buildName: RetoAmazonas-ARCore
           androidAppBundle: false
           allowDirtyBuild: true
+          projectPath: UnityProject
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
