@@ -17,6 +17,7 @@ import { useToast } from "./hooks/use-toast";
 import { Button } from "./components/ui/button";
 import { Card } from "./components/ui/card";
 import { Users } from "lucide-react";
+import { Toaster } from "./components/ui/toaster";
 
 function usePersistentState() {
   const initial = useMemo(() => loadState() || createInitialState(["Arara", "Jaguar"]), []);
